@@ -29,7 +29,7 @@ jobs:
       - name: Build and test with Maven
         run: mvn clean verify --file ./simple-api/pom.xml
       - name: Analyse code with SonarCloud
-        run: mvn -B verify sonar:sonar -Dsonar.projectKey=rsmadhi78_tp-devops-correction-docker -Dsonar.organization=rsmadhi-org -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file ./simple-api/pom.xml
+        run: mvn -B verify sonar:sonar -Dsonar.projectKey=rsmadhi-org-Dsonar.organization=rsmadhi-org -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file ./simple-api/pom.xml
 
   build-and-push-docker-image:
     needs: test-backend  # ← 🔎 Réponse question 2-3 : on dépend du test pour éviter de builder si les tests échouent
