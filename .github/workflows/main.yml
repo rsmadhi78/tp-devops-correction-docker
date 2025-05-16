@@ -36,7 +36,7 @@ jobs:
                 -Dsonar.host.url=https://sonarcloud.io \
                 -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
                 --file ./simple-api/pom.xml
-
+#TEST 2 
   build-and-push-docker-image:
     needs: test-backend  # ← 🔎 Réponse question 2-3 : on dépend du test pour éviter de builder si les tests échouent
     runs-on: ubuntu-24.04
