@@ -1,1 +1,1 @@
-This project is now mine 
+CI is now running!
