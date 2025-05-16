@@ -31,7 +31,7 @@ jobs:
       - name: Analyse code with SonarCloud
         run: |
               mvn -B verify sonar:sonar \
-                -Dsonar.projectKey=rsmadhi-org \
+                -Dsonar.projectKey=rsmadhi78_tp-devops-correction-docker \
                 -Dsonar.organization=rsmadhi-org \
                 -Dsonar.host.url=https://sonarcloud.io \
                 -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
