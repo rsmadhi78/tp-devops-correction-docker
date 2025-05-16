@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - develop
-  pull_request:  # Bonus : se déclenche aussi lors des pull requests
+  pull_request:  
 
 jobs:
   test-backend:
@@ -59,3 +59,7 @@ jobs:
           context: ./http-server
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
           push: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Analyse code with SonarCloud
+        run: mvn -B verify sonar:sonar -Dsonar.projectKey=rsmadhi78_tp-devops-correction-docker -Dsonar.organization=rsmadhi-org -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file ./simple-api/pom.xml
+
