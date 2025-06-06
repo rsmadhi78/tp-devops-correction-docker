@@ -1,0 +1,13 @@
+- name: Run Application container
+  docker_container:
+    name: simple-api
+    image: rostom78/tp-devops-simple-api:latest
+    networks:
+      - name: myapp_network
+    ports:
+      - "8080:8080"
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/db
+      SPRING_DATASOURCE_USERNAME: usr
+      SPRING_DATASOURCE_PASSWORD: pwd
+

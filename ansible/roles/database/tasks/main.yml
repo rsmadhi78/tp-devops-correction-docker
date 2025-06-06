@@ -1,0 +1,15 @@
+
+- name: Run PostgreSQL container
+  docker_container:
+    name: db
+    image: rostom78/tp-devops-database:latest
+    restart_policy: always
+    env:
+      POSTGRES_DB: db
+      POSTGRES_USER: "{{ postgres_user }}"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+
+    ports:
+      - "5432:5432"
+    networks:
+      - name: myapp_network
