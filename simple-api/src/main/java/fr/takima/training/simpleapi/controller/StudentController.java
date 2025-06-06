@@ -1,5 +1,4 @@
 package fr.takima.training.simpleapi.controller;
-
 import fr.takima.training.simpleapi.entity.Student;
 import fr.takima.training.simpleapi.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/studentstest")
+@RequestMapping(value = "/students")
 public class StudentController {
     private final StudentService studentService;
 
