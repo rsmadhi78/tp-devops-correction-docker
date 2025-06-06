@@ -1,6 +1,5 @@
-name: CI devops 2025
+name: CI & Deploy - DevOps 2025
 
-# Déclencheur du pipeline
 on:
   push:
     branches:
@@ -14,22 +13,18 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      # Étape 1 : Récupération du code
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      # Étape 2 : Installer JDK 21
       - name: Setup JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      # Étape 3 : Build et test avec Maven
       - name: Build and test with Maven
         run: mvn clean verify --file ./simple-api/pom.xml
 
-      # Étape 4 : Analyse SonarCloud
       - name: Analyse code with SonarCloud
         run: |
           mvn -B verify sonar:sonar \
@@ -72,18 +67,10 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
           push: ${{ github.ref == 'refs/heads/main' }}
 
----
-
-name: Deploy to Remote Server
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
   deploy:
-    name: Deploy with Ansible
+    name: Deploy to Remote Server with Ansible
+    needs: build-and-push-docker-image
+    if: github.ref == 'refs/heads/main'  # Ne déploie que depuis main
     runs-on: ubuntu-latest
 
     steps:
