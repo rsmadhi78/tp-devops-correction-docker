@@ -1,12 +1,12 @@
 name: CI devops 2025
 
-# Quand est-ce que le pipeline doit se déclencher ?
+# Déclencheur du pipeline
 on:
   push:
     branches:
       - main
       - develop
-  pull_request:  
+  pull_request:
 
 jobs:
   test-backend:
@@ -14,31 +14,34 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      # 1. Récupérer le code source du repository
+      # Étape 1 : Récupération du code
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      # 2. Installer JDK 21
+      # Étape 2 : Installer JDK 21
       - name: Setup JDK 21
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'  # Utilisation d'Adoptium Temurin
+          distribution: 'temurin'
           java-version: '21'
 
-      # 3. Exécuter Maven (build + tests)
+      # Étape 3 : Build et test avec Maven
       - name: Build and test with Maven
         run: mvn clean verify --file ./simple-api/pom.xml
+
+      # Étape 4 : Analyse SonarCloud
       - name: Analyse code with SonarCloud
         run: |
-              mvn -B verify sonar:sonar \
-                -Dsonar.projectKey=rsmadhi78_tp-devops-correction-docker \
-                -Dsonar.organization=rsmadhi-org \
-                -Dsonar.host.url=https://sonarcloud.io \
-                -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-                --file ./simple-api/pom.xml
-#TEST 2 
+          mvn -B verify sonar:sonar \
+            -Dsonar.projectKey=rsmadhi78_tp-devops-correction-docker \
+            -Dsonar.organization=rsmadhi-org \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            --file ./simple-api/pom.xml
+
   build-and-push-docker-image:
-    needs: test-backend  # ← 🔎 Réponse question 2-3 : on dépend du test pour éviter de builder si les tests échouent
+    name: Build & Push Docker Images
+    needs: test-backend
     runs-on: ubuntu-24.04
 
     steps:
@@ -69,7 +72,8 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
           push: ${{ github.ref == 'refs/heads/main' }}
 
-      
+---
+
 name: Deploy to Remote Server
 
 on:
@@ -83,36 +87,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.8.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Disable SSH Host Key Checking
-      run: |
-        mkdir -p ~/.ssh
-        echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+      - name: Disable SSH Host Key Checking
+        run: |
+          mkdir -p ~/.ssh
+          echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: Install Ansible
-      run: |
-        python -m pip install --upgrade pip
-        pip install ansible
+      - name: Install Ansible
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible
 
-    - name: Deploy with Ansible
-      env:
-        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        SPRING_USER: ${{ secrets.SPRING_USER }}
-        SPRING_PASSWORD: ${{ secrets.SPRING_PASSWORD }}
-      run: |
-        cd ansible
-        ansible-playbook playbook.yml -i inventories/setup.yml \
-        --extra-vars "postgres_user=$POSTGRES_USER postgres_password=$POSTGRES_PASSWORD spring_user=$SPRING_USER spring_password=$SPRING_PASSWORD"
+      - name: Deploy with Ansible
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          SPRING_USER: ${{ secrets.SPRING_USER }}
+          SPRING_PASSWORD: ${{ secrets.SPRING_PASSWORD }}
+        run: |
+          cd ansible
+          ansible-playbook playbook.yml -i inventories/setup.yml \
+            --extra-vars "postgres_user=$POSTGRES_USER postgres_password=$POSTGRES_PASSWORD spring_user=$SPRING_USER spring_password=$SPRING_PASSWORD"
