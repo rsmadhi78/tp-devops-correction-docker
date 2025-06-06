@@ -1,14 +1,20 @@
+- name: Pull latest PostgreSQL image
+  community.docker.docker_image:
+    name: rostom78/tp-devops-database:latest
+    source: pull
 
 - name: Run PostgreSQL container
-  docker_container:
+  community.docker.docker_container:
     name: db
     image: rostom78/tp-devops-database:latest
+    state: started
+    recreate: true     
+    pull: yes          
     restart_policy: always
     env:
       POSTGRES_DB: db
       POSTGRES_USER: "{{ postgres_user }}"
       POSTGRES_PASSWORD: "{{ postgres_password }}"
-
     ports:
       - "5432:5432"
     networks:

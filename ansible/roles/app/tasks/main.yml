@@ -1,13 +1,21 @@
-- name: Run Application container
-  docker_container:
+- name: Pull latest simple-api image
+  community.docker.docker_image:
+    name: rostom78/tp-devops-simple-api:latest
+    source: pull
+
+- name: Run simple-api container
+  community.docker.docker_container:
     name: simple-api
     image: rostom78/tp-devops-simple-api:latest
-    networks:
-      - name: myapp_network
-    ports:
-      - "8080:8080"
+    state: started
+    recreate: true  # pour forcer la recréation à chaque fois
+    pull: yes       # ce champ fonctionne aussi dans docker_container
     env:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/db
-      SPRING_DATASOURCE_USERNAME: usr
-      SPRING_DATASOURCE_PASSWORD: pwd
+      SPRING_DATASOURCE_USERNAME: "{{ spring_user }}"
+      SPRING_DATASOURCE_PASSWORD: "{{ spring_password }}"
+    ports:
+      - "8080:8080"
+    networks:
+      - name: myapp_network
 
